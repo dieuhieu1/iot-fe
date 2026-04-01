@@ -15,7 +15,7 @@ export default function DashboardPage() {
           <SensorCharts />
         </div>
         {/* Right panel — ~30% */}
-        <div className="w-72 shrink-0 flex flex-col gap-4">
+        <div className="w-80 shrink-0 flex flex-col gap-4 mr-5">
           <SensorControl />
           <QuickActions />
         </div>

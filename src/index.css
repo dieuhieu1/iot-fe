@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
   --color-sidebar-top: #1a3a2a;
@@ -17,6 +17,17 @@
   --font-family-sans: 'Inter', system-ui, sans-serif;
 }
 
+@utility inner-shadow-text {
+  filter: url(#inner-shadow-text);
+}
+
+@utility text-gradient-white-gray {
+  background: linear-gradient(to right, #ffffff 0%, #999999 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -31,4 +42,9 @@ body {
   width: 100%;
   min-height: 100vh;
   display: flex;
+}
+
+@keyframes toggle-lr {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(6px); }
 }

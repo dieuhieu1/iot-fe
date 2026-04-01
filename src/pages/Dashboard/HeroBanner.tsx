@@ -1,28 +1,27 @@
 import { useEffect, useState } from 'react';
-import { Flame, Droplets, Sun } from 'lucide-react';
 import { getDashboardLatest, type SensorReading } from '../../api';
 import { useSockets } from '../../context/SocketContext';
 import { SENSOR_META } from '../../constants';
 import heroBg from '../../assets/hero-bg.jpg';
-
+import { Icon } from '@iconify/react';
 const WAVE_PATH =
   'M4.50122 73.6076C8.53141 72.0456 14.3335 66.9998 19.5363 60.5388C20.9076 58.8357 21.2821 57.2302 22.4373 56.1131C23.5925 54.996 25.3123 54.3712 27.0581 54.2056C34.5252 53.497 43.8303 56.5486 51.3782 59.2419C57.7806 61.5264 63.5469 62.8723 66.4393 63.3504C73.3656 64.4952 75.099 49.0699 80.0499 42.2207C84.074 36.6537 101.747 50.2438 108.704 51.517C119.49 53.4911 131.278 42.0645 143.421 35.4568C151.265 31.1882 156.762 26.6054 162.538 25.0197C173.611 21.98 178.181 32.8818 185.139 34.1646C194.826 35.9507 197.881 24.3997 202.806 15.4252C204.256 13.0396 205.976 11.1652 207.435 9.731C208.894 8.29679 210.041 7.35959 214.696 4.50064';
 
 const CARD_CONFIG = [
   {
     type: 'Temperature',
-    Icon: Flame,
-    iconBg: 'bg-red-500',
+    icon: 'carbon:temperature',
+    iconBg: 'bg-[linear-gradient(to_bottom,#EB92B3_7%,#C00808_79%)]',
     cardBg: 'linear-gradient(to top, rgba(253, 154, 154, 0.5) 0%, rgba(151,92,92,0.5) 100%)',
     border: 'rgba(220,100,100,0.4)',
-    waveFrom: '#06263A',
-    waveTo: '#f87171',
+    waveFrom: '#9373BA',
+    waveTo: '#E22525',
     label: 'Temperature',
   },
   {
     type: 'Humidity',
-    Icon: Droplets,
-    iconBg: 'bg-cyan-500',
+    icon: 'temaki:water',
+    iconBg: 'bg-[linear-gradient(to_bottom,#9EE3DF_13%,#1E3A71_82%)]',
     cardBg: 'linear-gradient(to bottom, rgba(0,187,255,0.5) 49%, rgba(0,112,153,0.5) 100%)',
     border: 'rgba(100,200,220,0.4)',
     waveFrom: '#06263A',
@@ -31,12 +30,12 @@ const CARD_CONFIG = [
   },
   {
     type: 'Light',
-    Icon: Sun,
-    iconBg: 'bg-amber-500',
+    icon: 'tabler:sun-high',
+    iconBg: 'bg-[linear-gradient(to_bottom,#F2DF51_0%,#D85219_100%)]',
     cardBg: 'linear-gradient(to top, rgba(254,159,63, 0.5) 0%, rgba(152,95,38,0.5) 100%)',
     border: 'rgba(250,190,80,0.4)',
-    waveFrom: '#06263A',
-    waveTo: '#fbbf24',
+    waveFrom: '#F66313',
+    waveTo: '#F6D00C',
     label: 'Light Intensity',
   },
 ];
@@ -69,22 +68,6 @@ export default function HeroBanner() {
 
   return (
     <div className="relative h-61 my-2 w-400 overflow-hidden">
-      {/* SVG filter for text inner shadow */}
-      <svg width="0" height="0" className="absolute">
-        <defs>
-          <filter id="inner-shadow-text">
-            <feOffset dx="0" dy="2" />
-            <feGaussianBlur stdDeviation="3" result="blur" />
-            <feComposite operator="out" in="SourceGraphic" in2="blur" result="inverse" />
-            <feFlood floodColor="rgba(0,0,0,0.7)" result="color" />
-            <feComposite operator="in" in="color" in2="inverse" result="shadow" />
-            <feMerge>
-              <feMergeNode in="SourceGraphic" />
-              <feMergeNode in="shadow" />
-            </feMerge>
-          </filter>
-        </defs>
-      </svg>
       {/* Background image */}
       <div
         className="absolute inset-0 bg-cover bg-center"
@@ -107,7 +90,7 @@ export default function HeroBanner() {
 
         {/* Metric cards */}
         <div className="flex flex-wrap gap-30 ">
-          {CARD_CONFIG.map(({ type, Icon, iconBg, cardBg, border, waveFrom, waveTo, label }) => {
+          {CARD_CONFIG.map(({ type, icon, iconBg, cardBg, border, waveFrom, waveTo, label }) => {
             const reading = readings[type];
             const meta = SENSOR_META[type as keyof typeof SENSOR_META];
             const gradientId = `wave-gradient-${type}`;
@@ -118,7 +101,6 @@ export default function HeroBanner() {
                 style={{
                   background: cardBg,
                   border: `1px solid ${border}`,
-                  boxShadow: 'inset 0 2px 12px rgba(255,255,255,0.25), inset 0 -2px 10px rgba(0,0,0,0.3)',
                 }}
               >
                 {/* Left: icon + label + value */}
@@ -127,15 +109,15 @@ export default function HeroBanner() {
                     <div
                       className={`inline-flex items-center justify-center w-25 h-25 rounded-xl ${iconBg} shadow`}
                     >
-                      <Icon size={70} className="text-white" />
+                      <Icon icon={icon} fontSize={73} className="text-white" />
                     </div>
-                    <p className="text-white font-bold text-3xl leading-none" style={{ filter: 'url(#inner-shadow-text)' }}>
+                    <p className=" font-bold text-3xl  text-white leading-none inner-shadow-text">
                       {reading ? reading.value : '—'}
-                      <span className="text-[20px] font-normal ml-1">{meta?.unit}</span>
+                      <span className="text-[35px] font-normal ml-1">{meta?.unit}</span>
                     </p>
                   </div>
                   <div className="ml-6">
-                    <span className="flex items-center font-black text-[30px] leading-8.75 tracking-widest text-white mb-3" style={{ filter: 'url(#inner-shadow-text)' }}>
+                    <span className="flex items-center font-bold text-white text-[30px] leading-8.75 tracking-widest mb-3 inner-shadow-text">
                       {label}
                     </span>
                     {/* Decorative wave */}
@@ -144,7 +126,7 @@ export default function HeroBanner() {
                       height="79"
                       viewBox="0 0 220 79"
                       fill="none"
-                      className="shrink-0"
+                      className="shrink-0 ml-10"
                     >
                       <defs>
                         <linearGradient

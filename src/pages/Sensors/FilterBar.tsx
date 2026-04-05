@@ -62,12 +62,13 @@ export default function SensorFilterBar({ onApply }: Props) {
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-xs text-gray-500 font-medium">Date</label>
+        <label className="text-xs text-gray-500 font-medium">Search by date</label>
         <input
-          type="date"
+          type="text"
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+          placeholder="e.g. 2026-05-20"
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-44 focus:outline-none focus:ring-2 focus:ring-green-400"
         />
       </div>
 

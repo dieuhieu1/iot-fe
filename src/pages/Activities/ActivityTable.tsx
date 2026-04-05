@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { Wind, Droplets, Lightbulb, ArrowUpDown, Calendar } from 'lucide-react';
+import { Wind, Droplets, Lightbulb, ArrowUpDown, Calendar, Copy, Check } from 'lucide-react';
 import { getActionLogs, type ActionLogRow } from '../../api';
 import { useSockets } from '../../context/SocketContext';
 import TableSkeleton from '../../components/ui/Skeleton';
@@ -28,6 +28,20 @@ let nextTempId = -1;
 
 interface Props {
   filters: ActivityFilters;
+}
+
+function CopyBtn({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+  const copy = () => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+  return (
+    <button onClick={copy} className="ml-1 p-0.5 rounded hover:bg-gray-200 text-gray-400 hover:text-gray-600 transition-colors" title="Copy timestamp">
+      {copied ? <Check size={12} className="text-green-500" /> : <Copy size={12} />}
+    </button>
+  );
 }
 
 export default function ActivityTable({ filters }: Props) {
@@ -123,7 +137,12 @@ export default function ActivityTable({ filters }: Props) {
                   className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
                 >
                   <td className="px-4 py-3 text-gray-700 font-mono">#{row.device.id}</td>
-                  <td className="px-4 py-3 text-gray-700">{row.createdAt}</td>
+                  <td className="px-4 py-3 text-gray-700">
+                    <span className="flex items-center gap-1">
+                      {row.createdAt}
+                      <CopyBtn text={row.createdAt} />
+                    </span>
+                  </td>
                   <td className="px-4 py-3">
                     {deviceCfg ? (
                       <span className="flex items-center gap-2">

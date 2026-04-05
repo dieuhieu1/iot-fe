@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { getDashboardLatest, type SensorReading } from '../../api';
 import { useSockets } from '../../context/SocketContext';
 import { SENSOR_META } from '../../constants';
-import heroBg from '../../assets/hero-bg.jpg';
+import dashboardBg from '../../assets/dasboard-bg.jpg';
 import { Icon } from '@iconify/react';
 const WAVE_PATH =
   'M4.50122 73.6076C8.53141 72.0456 14.3335 66.9998 19.5363 60.5388C20.9076 58.8357 21.2821 57.2302 22.4373 56.1131C23.5925 54.996 25.3123 54.3712 27.0581 54.2056C34.5252 53.497 43.8303 56.5486 51.3782 59.2419C57.7806 61.5264 63.5469 62.8723 66.4393 63.3504C73.3656 64.4952 75.099 49.0699 80.0499 42.2207C84.074 36.6537 101.747 50.2438 108.704 51.517C119.49 53.4911 131.278 42.0645 143.421 35.4568C151.265 31.1882 156.762 26.6054 162.538 25.0197C173.611 21.98 178.181 32.8818 185.139 34.1646C194.826 35.9507 197.881 24.3997 202.806 15.4252C204.256 13.0396 205.976 11.1652 207.435 9.731C208.894 8.29679 210.041 7.35959 214.696 4.50064';
@@ -70,8 +70,12 @@ export default function HeroBanner() {
     <div className="relative h-61 my-2 w-400 overflow-hidden">
       {/* Background image */}
       <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url(${heroBg})` }}
+        className="absolute inset-0 bg-center"
+        style={{
+          backgroundImage: `url(${dashboardBg})`,
+          backgroundSize: '100%',
+          backgroundPositionY: -100,
+        }}
       />
       {/* Dark overlay */}
       <div className="absolute inset-0 bg-black/45" />

@@ -61,13 +61,24 @@ export default function Toggle({
       <style>{`
         .${gradId} path,.${gradId} rect,.${gradId} polygon{fill:url(#${gradId})}
         .${gradId}-ani path,.${gradId}-ani rect,.${gradId}-ani polygon{fill:url(#${gradId})}
+        .${gradId}-off path,.${gradId}-off rect,.${gradId}-off polygon{fill:#9ca3af}
+        @keyframes tg-spring-bounce {
+          0%   { transform: translateY(0) scale(1); }
+          20%  { transform: translateY(-6px) scale(1.1, 0.9); }
+          40%  { transform: translateY(0px) scale(0.95, 1.05); }
+          55%  { transform: translateY(-3px) scale(1.05, 0.95); }
+          70%  { transform: translateY(0px) scale(1); }
+          85%  { transform: translateY(-1px) scale(1.02, 0.98); }
+          100% { transform: translateY(0) scale(1); }
+        }
+        .tg-spring-bounce { animation: tg-spring-bounce 1s ease-in-out infinite; }
       `}</style>
 
       {/* Middle left-right icon — only when ON */}
       {checked && aniIcon && (
         <span
           className="absolute left-6 bottom-2 flex items-center justify-center pointer-events-none"
-          style={{ animation: 'toggle-lr 0.8s ease-in-out infinite' }}
+          style={{ animation: 'toggle-lr 0.8s ease-in-out infinite ' }}
         >
           <Icon
             icon={aniIcon}
@@ -118,7 +129,7 @@ export default function Toggle({
           <Icon
             icon={icon}
             fontSize={fontSize}
-            className={`${gradId} ${checked && icon === 'ph:fan-fill' ? 'animate-spin' : ''}`}
+            className={`${checked ? gradId : `${gradId}-off`} ${checked ? (icon === 'ph:fan-fill' ? 'animate-spin' : 'tg-spring-bounce') : ''}`}
           />
         )}
       </span>

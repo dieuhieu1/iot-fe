@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { Flame, Droplets, Sun, ArrowUpDown, Filter } from 'lucide-react';
+import { Flame, Droplets, Sun, ArrowUpDown, Filter, Copy, Check } from 'lucide-react';
 import { getSensorData, type SensorDataRow } from '../../api';
 import { useSockets } from '../../context/SocketContext';
 import TableSkeleton from '../../components/ui/Skeleton';
@@ -27,6 +27,20 @@ let nextTempId = -1;
 
 interface Props {
   filters: SensorFilters;
+}
+
+function CopyBtn({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+  const copy = () => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+  return (
+    <button onClick={copy} className="ml-1 p-0.5 rounded hover:bg-gray-200 text-gray-400 hover:text-gray-600 transition-colors" title="Copy timestamp">
+      {copied ? <Check size={12} className="text-green-500" /> : <Copy size={12} />}
+    </button>
+  );
 }
 
 export default function SensorTable({ filters }: Props) {
@@ -119,7 +133,12 @@ export default function SensorTable({ filters }: Props) {
                   className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
                 >
                   <td className="px-4 py-3 text-gray-700 font-mono">#{row.sensor.id || row.sensorId}</td>
-                  <td className="px-4 py-3 text-gray-700">{row.recordedAt}</td>
+                  <td className="px-4 py-3 text-gray-700">
+                    <span className="flex items-center gap-1">
+                      {row.recordedAt}
+                      <CopyBtn text={row.recordedAt} />
+                    </span>
+                  </td>
                   <td className="px-4 py-3">
                     {typeCfg ? (
                       <span className="flex items-center gap-2">

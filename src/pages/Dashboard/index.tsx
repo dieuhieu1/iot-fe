@@ -17,6 +17,12 @@ export default function DashboardPage() {
         {/* Right panel — ~30% */}
         <div className="w-80 shrink-0 flex flex-col gap-4 mr-5">
           <SensorControl />
+
+          <div
+            className="w-full h-2.5 rounded-[10px] my-2"
+            style={{ background: 'linear-gradient(to right, #E31637, #142F63)' }}
+          />
+
           <QuickActions />
         </div>
       </div>

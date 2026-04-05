@@ -52,20 +52,22 @@ export default function ActivityFilterBar({ onApply }: Props) {
       <div className="flex flex-col gap-1">
         <label className="text-xs text-gray-500 font-medium">From</label>
         <input
-          type="date"
+          type="text"
           value={from}
           onChange={(e) => setFrom(e.target.value)}
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+          placeholder="e.g. 2026-05-20"
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-44 focus:outline-none focus:ring-2 focus:ring-green-400"
         />
       </div>
 
       <div className="flex flex-col gap-1">
         <label className="text-xs text-gray-500 font-medium">To</label>
         <input
-          type="date"
+          type="text"
           value={to}
           onChange={(e) => setTo(e.target.value)}
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+          placeholder="e.g. 2026-05-21"
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-44 focus:outline-none focus:ring-2 focus:ring-green-400"
         />
       </div>
 

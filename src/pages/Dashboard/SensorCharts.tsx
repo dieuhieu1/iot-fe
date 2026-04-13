@@ -8,23 +8,6 @@ const CHART_LIMIT = 20;
 
 type DatasetMap = Record<string, ChartDataset>;
 
-function makeMockPoints(count: number, base: number, spread: number): ChartDataPoint[] {
-  const now = new Date();
-  return Array.from({ length: count }, (_, i) => {
-    const t = new Date(now.getTime() - (count - 1 - i) * 5000);
-    const pad = (n: number) => String(n).padStart(2, '0');
-    const recordedAt = `${t.getFullYear()}-${pad(t.getMonth() + 1)}-${pad(t.getDate())} ${pad(t.getHours())}:${pad(t.getMinutes())}:${pad(t.getSeconds())}`;
-    const value = Math.round((base + (Math.random() - 0.5) * spread * 2) * 10) / 10;
-    return { value, recordedAt };
-  });
-}
-
-const MOCK_DATASETS: DatasetMap = {
-  Temperature: { type: 'Temperature', data: makeMockPoints(20, 28, 8) },
-  Humidity: { type: 'Humidity', data: makeMockPoints(20, 65, 15) },
-  Light: { type: 'Light', data: makeMockPoints(20, 400, 200) },
-};
-
 interface SensorEvent {
   type: string;
   value: number;
@@ -35,7 +18,7 @@ interface SensorEvent {
 }
 
 export default function SensorCharts() {
-  const [datasets, setDatasets] = useState<DatasetMap>(MOCK_DATASETS);
+  const [datasets, setDatasets] = useState<DatasetMap>({});
   const { sensorSocket } = useSockets();
 
   useEffect(() => {

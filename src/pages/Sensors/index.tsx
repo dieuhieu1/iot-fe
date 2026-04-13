@@ -2,14 +2,13 @@ import { useState } from 'react';
 import SensorFilterBar, { type SensorFilters } from './FilterBar';
 import SensorTable from './SensorTable';
 
-const today = new Date().toISOString().split('T')[0];
-
 const DEFAULT_FILTERS: SensorFilters = {
-  search:     '',
-  sensorType: '',
-  date:       today,
-  sortBy:     'name',
-  sortOrder:  'asc',
+  sensorId:   '',
+  sensorName: '',
+  date:       '',
+  value:      '',
+  sortBy:     'recordedAt',
+  sortOrder:  'DESC',
 };
 
 export default function SensorsPage() {

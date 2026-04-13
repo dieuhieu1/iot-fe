@@ -12,7 +12,7 @@ const LINKS = [
     titleColor: 'linear-gradient(to bottom,#DD7676 0%,#990000 100%)',
     borderColor: '#FF1212',
     subtitle: 'Báo cáo bài tập cuối kì - Phát triển ứng dụng IoT',
-    href: '#',
+    href: '/docs/BaoCaoIOT.pdf',
   },
   {
     title: 'Github',
@@ -21,7 +21,7 @@ const LINKS = [
     titleColor: 'linear-gradient(to bottom,#121212 0%,#787575 100%)',
     borderColor: '#121212',
     subtitle: 'Source code and project repository',
-    href: '#',
+    href: 'https://github.com/dieuhieu1/iot-nest-be',
   },
   {
     title: 'Swagger - API Documentation',
@@ -30,7 +30,7 @@ const LINKS = [
     titleColor: 'linear-gradient(to bottom,#43A047 0%,#183A1A 100%)',
     borderColor: '#4EB552',
     subtitle: 'RESTful API endpoints & Swagger schemas',
-    href: '#',
+    href: 'http://localhost:3000/api/docs',
   },
   {
     title: 'Figma Design',
@@ -39,7 +39,7 @@ const LINKS = [
     titleColor: 'linear-gradient(to bottom,#B174FE 0%,#613599 100%)',
     borderColor: '#A259FF',
     subtitle: 'High-fidelity UI/UX prototypes & wireframes',
-    href: '#',
+    href: 'https://www.figma.com/design/vsFxZGbE0eFcMDoeQKXqq7/Iot-Figma?node-id=0-1&t=uzKTBoNNbX2e7aAi-0',
   },
 ];
 

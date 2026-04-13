@@ -1,74 +1,81 @@
 import { useState } from 'react';
 
 export interface SensorFilters {
-  search: string;
-  sensorType: string;
-  date: string;
-  sortBy: string;
-  sortOrder: string;
+  sensorId:   string;
+  sensorName: string;
+  date:       string;
+  value:      string;
+  sortBy:     string;
+  sortOrder:  string;
 }
-
-const today = new Date().toISOString().split('T')[0];
-
-const SORT_OPTIONS = [
-  { label: 'Alphabet (A-Z)',  sortBy: 'name',       sortOrder: 'asc'  },
-  { label: 'Alphabet (Z-A)',  sortBy: 'name',       sortOrder: 'desc' },
-  { label: 'Newest First',    sortBy: 'recordedAt', sortOrder: 'desc' },
-  { label: 'Oldest First',    sortBy: 'recordedAt', sortOrder: 'asc'  },
-  { label: 'Sensor ID (↑)',   sortBy: 'sensorId',   sortOrder: 'asc'  },
-  { label: 'Sensor ID (↓)',   sortBy: 'sensorId',   sortOrder: 'desc' },
-];
 
 interface Props {
   onApply: (filters: SensorFilters) => void;
 }
 
+const SORT_OPTIONS = [
+  { label: 'Time (Newest)',  sortBy: 'recordedAt', sortOrder: 'DESC' },
+  { label: 'Time (Oldest)',  sortBy: 'recordedAt', sortOrder: 'ASC'  },
+  { label: 'Value (High→Low)', sortBy: 'value',   sortOrder: 'DESC' },
+  { label: 'Value (Low→High)', sortBy: 'value',   sortOrder: 'ASC'  },
+];
+
 export default function SensorFilterBar({ onApply }: Props) {
-  const [search, setSearch]         = useState('');
-  const [sensorType, setSensorType] = useState('');
-  const [date, setDate]             = useState(today);
-  const [sortKey, setSortKey]       = useState('name|asc');
+  const [sensorId,   setSensorId]   = useState('');
+  const [sensorName, setSensorName] = useState('');
+  const [date,       setDate]       = useState('');
+  const [value,      setValue]      = useState('');
+  const [sortKey,    setSortKey]    = useState('recordedAt|DESC');
 
   const handleApply = () => {
     const [sortBy, sortOrder] = sortKey.split('|');
-    onApply({ search, sensorType, date, sortBy, sortOrder });
+    onApply({ sensorId, sensorName, date, value, sortBy, sortOrder });
   };
 
   return (
     <div className="flex flex-wrap gap-3 items-end mb-5">
       <div className="flex flex-col gap-1">
-        <label className="text-xs text-gray-500 font-medium">Search Logs</label>
+        <label className="text-xs text-gray-500 font-medium">Sensor ID</label>
         <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search sensor name..."
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-48 focus:outline-none focus:ring-2 focus:ring-green-400"
+          type="number"
+          value={sensorId}
+          onChange={(e) => setSensorId(e.target.value)}
+          placeholder="e.g. 1"
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-32 focus:outline-none focus:ring-2 focus:ring-green-400"
         />
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-xs text-gray-500 font-medium">Sensor Type</label>
-        <select
-          value={sensorType}
-          onChange={(e) => setSensorType(e.target.value)}
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
-        >
-          <option value="">All Sensors</option>
-          <option value="Temperature">Temperature</option>
-          <option value="Humidity">Humidity</option>
-          <option value="Light">Light Intensity</option>
-        </select>
+        <label className="text-xs text-gray-500 font-medium">Sensor Name</label>
+        <input
+          type="text"
+          value={sensorName}
+          onChange={(e) => setSensorName(e.target.value)}
+          placeholder="e.g. Temperature"
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-44 focus:outline-none focus:ring-2 focus:ring-green-400"
+        />
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-xs text-gray-500 font-medium">Search by date</label>
+        <label className="text-xs text-gray-500 font-medium">Date</label>
         <input
           type="text"
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          placeholder="e.g. 2026-05-20"
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-44 focus:outline-none focus:ring-2 focus:ring-green-400"
+          placeholder="e.g. 2026-04-13 or 2026-04-13 14:30"
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-56 focus:outline-none focus:ring-2 focus:ring-green-400"
+        />
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <label className="text-xs text-gray-500 font-medium">Value</label>
+        <input
+          type="number"
+          step="any"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder="e.g. 28 or 28.1"
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-36 focus:outline-none focus:ring-2 focus:ring-green-400"
         />
       </div>
 

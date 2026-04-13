@@ -1,113 +1,88 @@
 import { useState } from 'react';
 
 export interface ActivityFilters {
-  search: string;
-  from: string;
-  to: string;
-  date: string;
-  deviceType: string;
-  sortBy: string;
-  sortOrder: string;
+  deviceId:        string;
+  action:          string;
+  executionStatus: string;
+  date:            string;
+  sortOrder:       string;
 }
-
-const SORT_OPTIONS = [
-  { label: 'Alphabet (A-Z)',  sortBy: 'name',      sortOrder: 'asc'  },
-  { label: 'Alphabet (Z-A)',  sortBy: 'name',      sortOrder: 'desc' },
-  { label: 'Newest First',    sortBy: 'createdAt', sortOrder: 'desc' },
-  { label: 'Oldest First',    sortBy: 'createdAt', sortOrder: 'asc'  },
-  { label: 'Device ID (↑)',   sortBy: 'deviceId',  sortOrder: 'asc'  },
-  { label: 'Device ID (↓)',   sortBy: 'deviceId',  sortOrder: 'desc' },
-];
 
 interface Props {
   onApply: (filters: ActivityFilters) => void;
 }
 
 export default function ActivityFilterBar({ onApply }: Props) {
-  const [search, setSearch]         = useState('');
-  const [from, setFrom]             = useState('2026-05-20');
-  const [to, setTo]                 = useState('2026-05-21');
-  const [date, setDate]             = useState('');
-  const [deviceType, setDeviceType] = useState('');
-  const [sortKey, setSortKey]       = useState('name|asc');
+  const [deviceId,        setDeviceId]        = useState('');
+  const [action,          setAction]          = useState('');
+  const [executionStatus, setExecutionStatus] = useState('');
+  const [date,            setDate]            = useState('');
+  const [sortOrder,       setSortOrder]       = useState('DESC');
 
   const handleApply = () => {
-    const [sortBy, sortOrder] = sortKey.split('|');
-    onApply({ search, from, to, date, deviceType, sortBy, sortOrder });
+    onApply({ deviceId, action, executionStatus, date, sortOrder });
   };
 
   return (
     <div className="flex flex-wrap gap-3 items-end mb-5">
       <div className="flex flex-col gap-1">
-        <label className="text-xs text-gray-500 font-medium">Search Logs</label>
+        <label className="text-xs text-gray-500 font-medium">Device ID</label>
         <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search device name..."
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-44 focus:outline-none focus:ring-2 focus:ring-green-400"
+          type="number"
+          value={deviceId}
+          onChange={(e) => setDeviceId(e.target.value)}
+          placeholder="e.g. 1"
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-32 focus:outline-none focus:ring-2 focus:ring-green-400"
         />
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-xs text-gray-500 font-medium">From</label>
-        <input
-          type="text"
-          value={from}
-          onChange={(e) => setFrom(e.target.value)}
-          placeholder="e.g. 2026-05-20"
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-44 focus:outline-none focus:ring-2 focus:ring-green-400"
-        />
-      </div>
-
-      <div className="flex flex-col gap-1">
-        <label className="text-xs text-gray-500 font-medium">To</label>
-        <input
-          type="text"
-          value={to}
-          onChange={(e) => setTo(e.target.value)}
-          placeholder="e.g. 2026-05-21"
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-44 focus:outline-none focus:ring-2 focus:ring-green-400"
-        />
-      </div>
-
-      <div className="flex flex-col gap-1">
-        <label className="text-xs text-gray-500 font-medium">Search by time</label>
-        <input
-          type="text"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          placeholder="e.g. 2026-05-20 14:30"
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-52 focus:outline-none focus:ring-2 focus:ring-green-400"
-        />
-      </div>
-
-      <div className="flex flex-col gap-1">
-        <label className="text-xs text-gray-500 font-medium">Sensor Type</label>
+        <label className="text-xs text-gray-500 font-medium">Action</label>
         <select
-          value={deviceType}
-          onChange={(e) => setDeviceType(e.target.value)}
+          value={action}
+          onChange={(e) => setAction(e.target.value)}
           className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
         >
-          <option value="">All Sensors</option>
-          <option value="Ventilation Fan">Ventilation Fan</option>
-          <option value="Smart Pump">Smart Pump</option>
-          <option value="Smart Light">Smart Light</option>
+          <option value="">All</option>
+          <option value="ON">ON</option>
+          <option value="OFF">OFF</option>
         </select>
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-xs text-gray-500 font-medium">Sort by</label>
+        <label className="text-xs text-gray-500 font-medium">Execution Status</label>
         <select
-          value={sortKey}
-          onChange={(e) => setSortKey(e.target.value)}
+          value={executionStatus}
+          onChange={(e) => setExecutionStatus(e.target.value)}
           className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
         >
-          {SORT_OPTIONS.map((o) => (
-            <option key={`${o.sortBy}|${o.sortOrder}`} value={`${o.sortBy}|${o.sortOrder}`}>
-              {o.label}
-            </option>
-          ))}
+          <option value="">All</option>
+          <option value="PROCESSING">Processing</option>
+          <option value="SUCCESS">Success</option>
+          <option value="FAILURE">Failure</option>
+        </select>
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <label className="text-xs text-gray-500 font-medium">Date</label>
+        <input
+          type="text"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          placeholder="e.g. 2026-04-13 or 2026-04-13 14:30"
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-56 focus:outline-none focus:ring-2 focus:ring-green-400"
+        />
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <label className="text-xs text-gray-500 font-medium">Sort by Time</label>
+        <select
+          value={sortOrder}
+          onChange={(e) => setSortOrder(e.target.value)}
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+        >
+          <option value="DESC">Newest First</option>
+          <option value="ASC">Oldest First</option>
         </select>
       </div>
 

@@ -51,7 +51,9 @@ export default function ActivityTable({ filters }: Props) {
   const [loading, setLoading] = useState(true);
   const { deviceSocket }      = useSockets();
   const rowsRef               = useRef<ActionLogRow[]>([]);
+  const filtersRef            = useRef(filters);
   rowsRef.current             = rows;
+  filtersRef.current          = filters;
 
   useEffect(() => {
     setPage(1);
@@ -60,16 +62,14 @@ export default function ActivityTable({ filters }: Props) {
   useEffect(() => {
     setLoading(true);
     const params: Record<string, string | number> = {
-      search:     filters.search,
-      deviceType: filters.deviceType,
-      from:       filters.from,
-      to:         filters.to,
-      date:       filters.date,
-      sortBy:     filters.sortBy,
-      sortOrder:  filters.sortOrder,
-      limit:      PAGE_SIZE,
-      offset:     (page - 1) * PAGE_SIZE,
+      limit:  PAGE_SIZE,
+      offset: (page - 1) * PAGE_SIZE,
     };
+    if (filters.deviceId)        params.deviceId        = parseInt(filters.deviceId);
+    if (filters.action)          params.action          = filters.action;
+    if (filters.executionStatus) params.executionStatus = filters.executionStatus;
+    if (filters.date)            params.date            = filters.date;
+    if (filters.sortOrder)       params.sortOrder       = filters.sortOrder;
     getActionLogs(params)
       .then((res) => {
         setRows(res.data.data);
@@ -80,22 +80,25 @@ export default function ActivityTable({ filters }: Props) {
 
   useEffect(() => {
     const handler = (event: DeviceStatusEvent) => {
+      // Skip real-time update when sorted oldest-first — new rows belong at the bottom
+      if (filtersRef.current.sortOrder === 'ASC') return;
+
       const existing = rowsRef.current.find((r) => r.deviceId === event.deviceId);
       const newRow: ActionLogRow = {
-        id:       nextTempId--,
+        id: nextTempId--,
         deviceId: event.deviceId,
         device: {
-          id:         event.deviceId,
-          name:       existing?.device.name ?? `Device ${event.deviceId}`,
+          id: event.deviceId,
+          name: existing?.device.name ?? `Device ${event.deviceId}`,
           deviceCode: event.deviceCode,
-          type:       existing?.device.type ?? '',
+          type: existing?.device.type ?? '',
         },
-        action:          event.currentStatus === 'ON' ? 'ON' : 'OFF',
+        action: event.currentStatus === 'ON' ? 'ON' : 'OFF',
         executionStatus: event.executionStatus,
-        description:     null,
-        createdAt:       new Date().toISOString().replace('T', ' ').substring(0, 19),
+        description: null,
+        createdAt: new Date().toISOString().replace('T', ' ').substring(0, 19),
       };
-      setRows((prev) => [newRow, ...prev]);
+      setRows((prev) => [newRow, ...prev].slice(0, PAGE_SIZE));
       setTotal((t) => t + 1);
     };
     deviceSocket.on('device_status', handler);
@@ -111,7 +114,7 @@ export default function ActivityTable({ filters }: Props) {
               <span className="flex items-center gap-1">DEVICE_ID <ArrowUpDown size={12} /></span>
             </th>
             <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              <span className="flex items-center gap-1">TIMESTAMP <Calendar size={12} /></span>
+              <span className="flex items-center gap-1">EXECUTED AT <Calendar size={12} /></span>
             </th>
             <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
               <span className="flex items-center gap-1">DEVICE NAME <ArrowUpDown size={12} /></span>

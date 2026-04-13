@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { Flame, Droplets, Sun, ArrowUpDown, Filter, Copy, Check } from 'lucide-react';
+import { Flame, Droplets, Sun, ArrowUpDown, Filter, Copy, Check, Calendar } from 'lucide-react';
 import { getSensorData, type SensorDataRow } from '../../api';
 import { useSockets } from '../../context/SocketContext';
 import TableSkeleton from '../../components/ui/Skeleton';
@@ -22,6 +22,30 @@ const TYPE_ICON: Record<string, { Icon: typeof Flame; color: string; label: stri
   Humidity:    { Icon: Droplets, color: '#3182ce', label: 'Humidity'       },
   Light:       { Icon: Sun,      color: '#d69e2e', label: 'Light Intensity' },
 };
+
+// Blend between two hex colors based on t (0→1)
+function blendHex(a: string, b: string, t: number) {
+  const h = (s: string) => parseInt(s, 16);
+  const [ar, ag, ab] = [h(a.slice(1,3)), h(a.slice(3,5)), h(a.slice(5,7))];
+  const [br, bg, bb] = [h(b.slice(1,3)), h(b.slice(3,5)), h(b.slice(5,7))];
+  const r = Math.round(ar + (br - ar) * t);
+  const g = Math.round(ag + (bg - ag) * t);
+  const bv = Math.round(ab + (bb - ab) * t);
+  return `rgb(${r},${g},${bv})`;
+}
+
+const VALUE_RANGE: Record<string, { min: number; max: number; colorLow: string; colorHigh: string }> = {
+  Temperature: { min: 0,    max: 50,   colorLow: '#3182ce', colorHigh: '#e53e3e' }, // blue→red
+  Humidity:    { min: 0,    max: 100,  colorLow: '#d69e2e', colorHigh: '#3182ce' }, // orange→blue
+  Light:       { min: 0,    max: 1000, colorLow: '#718096', colorHigh: '#d69e2e' }, // gray→yellow
+};
+
+function valueColor(type: string, value: number): string {
+  const range = VALUE_RANGE[type];
+  if (!range) return '#4a5568';
+  const t = Math.min(1, Math.max(0, (value - range.min) / (range.max - range.min)));
+  return blendHex(range.colorLow, range.colorHigh, t);
+}
 
 let nextTempId = -1;
 
@@ -59,14 +83,15 @@ export default function SensorTable({ filters }: Props) {
   useEffect(() => {
     setLoading(true);
     const params: Record<string, string | number> = {
-      search:     filters.search,
-      sensorType: filters.sensorType,
-      date:       filters.date,
-      sortBy:     filters.sortBy,
-      sortOrder:  filters.sortOrder,
-      limit:      PAGE_SIZE,
-      offset:     (page - 1) * PAGE_SIZE,
+      limit:  PAGE_SIZE,
+      offset: (page - 1) * PAGE_SIZE,
     };
+    if (filters.sensorId)   params.sensorId   = parseInt(filters.sensorId);
+    if (filters.sensorName) params.sensorName = filters.sensorName;
+    if (filters.date)       params.date       = filters.date;
+    if (filters.value)      params.value      = parseFloat(filters.value);
+    if (filters.sortBy)     params.sortBy     = filters.sortBy;
+    if (filters.sortOrder)  params.sortOrder  = filters.sortOrder;
     getSensorData(params)
       .then((res) => {
         setRows(res.data.data);
@@ -77,21 +102,32 @@ export default function SensorTable({ filters }: Props) {
 
   useEffect(() => {
     const handler = (event: SensorEvent) => {
+      const f = filtersRef.current;
+
+      // Skip real-time update when sort is active — order would be wrong
+      if (f.sortBy !== 'recordedAt' || f.sortOrder !== 'DESC') return;
+
+      // Skip if incoming event doesn't match active filters
+      if (f.sensorId) return; // can't verify sensorId from socket event
+      if (f.sensorName && !event.type.toLowerCase().includes(f.sensorName.toLowerCase())) return;
+      if (f.date && !event.recordedAt.includes(f.date)) return;
+      if (f.value && parseFloat(f.value) !== event.value) return;
+
       const newRow: SensorDataRow = {
-        id:       nextTempId--,
+        id: nextTempId--,
         sensorId: 0,
         sensor: {
-          id:         0,
-          name:       event.type + ' Sensor',
+          id: 0,
+          name: event.type + ' Sensor',
           sensorCode: event.sensorCode,
-          type:       event.type,
-          unit:       event.unit,
+          type: event.type,
+          unit: event.unit,
         },
-        value:      event.value,
-        status:     event.status,
+        value: event.value,
+        status: event.status,
         recordedAt: event.recordedAt,
       };
-      setRows((prev) => [newRow, ...prev]);
+      setRows((prev) => [newRow, ...prev].slice(0, PAGE_SIZE));
       setTotal((t) => t + 1);
     };
     sensorSocket.on('sensor_data', handler);
@@ -107,7 +143,10 @@ export default function SensorTable({ filters }: Props) {
               <span className="flex items-center gap-1">SENSOR_ID <ArrowUpDown size={12} /></span>
             </th>
             <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              <span className="flex items-center gap-1">TIMESTAMP <ArrowUpDown size={12} /></span>
+              <span className="flex items-center gap-1">RECORED AT <Calendar size={12} /></span>
+            </th>
+            <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+              SENSOR NAME
             </th>
             <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
               <span className="flex items-center gap-1">SENSOR TYPE <Filter size={12} /></span>
@@ -122,7 +161,7 @@ export default function SensorTable({ filters }: Props) {
             <TableSkeleton cols={4} rows={5} />
           ) : rows.length === 0 ? (
             <tr>
-              <td colSpan={4} className="px-4 py-12 text-center text-gray-400">No data found</td>
+              <td colSpan={5} className="px-4 py-12 text-center text-gray-400">No data found</td>
             </tr>
           ) : (
             rows.map((row, i) => {
@@ -139,6 +178,7 @@ export default function SensorTable({ filters }: Props) {
                       <CopyBtn text={row.recordedAt} />
                     </span>
                   </td>
+                  <td className="px-4 py-3 text-gray-700">{row.sensor.name}</td>
                   <td className="px-4 py-3">
                     {typeCfg ? (
                       <span className="flex items-center gap-2">
@@ -149,7 +189,9 @@ export default function SensorTable({ filters }: Props) {
                       <span className="text-gray-600">{row.sensor.type}</span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-gray-700">{row.value} {row.sensor.unit}</td>
+                  <td className="px-4 py-3 font-semibold" style={{ color: valueColor(row.sensor.type, row.value) }}>
+                    {row.value} {row.sensor.unit}
+                  </td>
                 </tr>
               );
             })

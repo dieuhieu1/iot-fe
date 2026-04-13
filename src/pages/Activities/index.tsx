@@ -3,13 +3,11 @@ import ActivityFilterBar, { type ActivityFilters } from './FilterBar';
 import ActivityTable from './ActivityTable';
 
 const DEFAULT_FILTERS: ActivityFilters = {
-  search:     '',
-  from:       '2026-05-20',
-  to:         '2026-05-21',
-  date:       '',
-  deviceType: '',
-  sortBy:     'name',
-  sortOrder:  'asc',
+  deviceId:        '',
+  action:          '',
+  executionStatus: '',
+  date:            '',
+  sortOrder:       'DESC',
 };
 
 export default function ActivitiesPage() {

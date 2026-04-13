@@ -42,6 +42,7 @@ export interface Device {
   id: number;
   name: string;
   deviceCode: string;
+  type: string;
   currentStatus: 'ON' | 'OFF';
 }
 

@@ -1,7 +1,6 @@
-import { useState, useCallback } from 'react';
-import { SlidersHorizontal } from 'lucide-react';
-// import { getDashboardDevices, patchDeviceControl, type Device } from '../../api';
-// import { useSockets } from '../../context/SocketContext';
+import { useEffect, useState, useCallback } from 'react';
+import { getDashboardDevices, patchDeviceControl } from '../../api';
+import { useSockets } from '../../context/SocketContext';
 import Toggle from '../../components/ui/Toggle';
 import { Icon } from '@iconify/react';
 
@@ -9,18 +8,19 @@ interface DeviceState {
   id: number;
   name: string;
   deviceCode: string;
+  type: string;
   currentStatus: 'ON' | 'OFF';
   loading: boolean;
   prevStatus: 'ON' | 'OFF';
 }
 
-// interface DeviceStatusEvent {
-//   deviceId: number;
-//   deviceCode: string;
-//   currentStatus: 'ON' | 'OFF';
-//   executionStatus: 'PROCESSING' | 'SUCCESS' | 'FAILURE';
-//   logId: number;
-// }
+interface DeviceStatusEvent {
+  deviceId: number;
+  deviceCode: string;
+  currentStatus: 'ON' | 'OFF';
+  executionStatus: 'PROCESSING' | 'SUCCESS' | 'FAILURE';
+  logId: number;
+}
 
 const DEVICE_CONFIG: Record<
   string,
@@ -62,77 +62,49 @@ const DEVICE_CONFIG: Record<
     trackOff: 'linear-gradient(90deg, #a0a0a0 0%, #c8c8c8 30%, #b0b0b0 60%)',
   },
 };
-function getDeviceConfig(name: string) {
-  return DEVICE_CONFIG[name] ?? DEVICE_CONFIG['Ventilation Fan'];
+
+function getDeviceConfig(type: string) {
+  return DEVICE_CONFIG[type] ?? DEVICE_CONFIG['Ventilation Fan'];
 }
-const MOCK_DEVICES: DeviceState[] = [
-  {
-    id: 1,
-    name: 'Ventilation Fan',
-    deviceCode: 'FAN_01',
-    currentStatus: 'OFF',
-    loading: false,
-    prevStatus: 'OFF',
-  },
-  {
-    id: 2,
-    name: 'Smart Pump',
-    deviceCode: 'PUMP_01',
-    currentStatus: 'OFF',
-    loading: false,
-    prevStatus: 'OFF',
-  },
-  {
-    id: 3,
-    name: 'Smart Light',
-    deviceCode: 'LIGHT_01',
-    currentStatus: 'OFF',
-    loading: false,
-    prevStatus: 'OFF',
-  },
-];
 
 export default function SensorControl() {
-  const [devices, setDevices] = useState<DeviceState[]>(MOCK_DEVICES);
-  // const { deviceSocket } = useSockets();
+  const [devices, setDevices] = useState<DeviceState[]>([]);
+  const { deviceSocket } = useSockets();
 
-  // useEffect(() => {
-  //   getDashboardDevices().then((res) => {
-  //     setDevices(res.data.devices.map((d) => ({ ...d, loading: false, prevStatus: d.currentStatus })));
-  //   });
-  // }, []);
+  useEffect(() => {
+    getDashboardDevices().then((res) => {
+      setDevices(res.data.devices.map((d) => ({ ...d, loading: false, prevStatus: d.currentStatus })));
+    });
+  }, []);
 
-  // useEffect(() => {
-  //   const handler = (event: DeviceStatusEvent) => {
-  //     setDevices((prev) =>
-  //       prev.map((d) => {
-  //         if (d.id !== event.deviceId) return d;
-  //         if (event.executionStatus === 'SUCCESS') {
-  //           return { ...d, currentStatus: event.currentStatus, loading: false, prevStatus: event.currentStatus };
-  //         }
-  //         if (event.executionStatus === 'FAILURE') {
-  //           window.dispatchEvent(new CustomEvent('app:toast', { detail: { message: `Failed to control ${d.name}` } }));
-  //           return { ...d, currentStatus: d.prevStatus, loading: false };
-  //         }
-  //         return d;
-  //       })
-  //     );
-  //   };
-  //   deviceSocket.on('device_status', handler);
-  //   return () => { deviceSocket.off('device_status', handler); };
-  // }, [deviceSocket]);
+  useEffect(() => {
+    const handler = (event: DeviceStatusEvent) => {
+      setDevices((prev) =>
+        prev.map((d) => {
+          if (d.id !== event.deviceId) return d;
+          if (event.executionStatus === 'SUCCESS') {
+            return { ...d, currentStatus: event.currentStatus, loading: false, prevStatus: event.currentStatus };
+          }
+          if (event.executionStatus === 'FAILURE') {
+            window.dispatchEvent(new CustomEvent('app:toast', { detail: { message: `Failed to control ${d.name}` } }));
+            return { ...d, currentStatus: d.prevStatus, loading: false };
+          }
+          return d;
+        })
+      );
+    };
+    deviceSocket.on('device_status', handler);
+    return () => { deviceSocket.off('device_status', handler); };
+  }, [deviceSocket]);
 
-  const handleToggle = useCallback((device: DeviceState, newChecked: boolean) => {
-    setDevices((prev) =>
-      prev.map((d) => (d.id === device.id ? { ...d, currentStatus: newChecked ? 'ON' : 'OFF' } : d))
-    );
-    // const action = newChecked ? 'ON' : 'OFF';
-    // setDevices((prev) => prev.map((d) => d.id === device.id ? { ...d, loading: true, prevStatus: d.currentStatus } : d));
-    // try {
-    //   await patchDeviceControl(device.id, action);
-    // } catch {
-    //   setDevices((prev) => prev.map((d) => (d.id === device.id ? { ...d, loading: false } : d)));
-    // }
+  const handleToggle = useCallback(async (device: DeviceState, newChecked: boolean) => {
+    const action = newChecked ? 'ON' : 'OFF';
+    setDevices((prev) => prev.map((d) => d.id === device.id ? { ...d, loading: true, prevStatus: d.currentStatus } : d));
+    try {
+      await patchDeviceControl(device.id, action);
+    } catch {
+      setDevices((prev) => prev.map((d) => (d.id === device.id ? { ...d, loading: false } : d)));
+    }
   }, []);
 
   return (
@@ -157,7 +129,7 @@ export default function SensorControl() {
       </div>
       <div className="flex flex-col gap-5">
         {devices.map((device, idx) => {
-          const cfg = getDeviceConfig(device.name);
+          const cfg = getDeviceConfig(device.type);
           const isOn = device.currentStatus === 'ON';
           return (
             <div key={device.id}>

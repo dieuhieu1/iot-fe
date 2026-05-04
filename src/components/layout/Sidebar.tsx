@@ -8,6 +8,7 @@ const navItems = [
   { to: '/', label: 'Dashboard', icon: 'material-symbols:dashboard' },
   { to: '/sensors', label: 'Sensors', icon: 'ic:round-sensors' },
   { to: '/activities', label: 'Activities', icon: 'hugeicons:computer-activity' },
+  { to: '/stats', label: 'Statistics', icon: 'mdi:chart-bar' },
   { to: '/profile', label: 'My Profile', icon: 'iconamoon:profile' },
 ];
 

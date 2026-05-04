@@ -11,6 +11,7 @@ export const SENSOR_META = {
     bgFrom: '#BF0606',
     bgMid: '#C97683',
     bgTo: '#E68CB3',
+    threshold: 20,
   },
   Humidity: {
     label: 'Humidity',
@@ -21,6 +22,7 @@ export const SENSOR_META = {
     bgFrom: '#030D33',
     bgMid: '#61899A',
     bgTo: '#A2E8E2',
+    threshold: 40,
   },
   Light: {
     label: 'Light Intensity',
@@ -31,6 +33,7 @@ export const SENSOR_META = {
     bgFrom: '#CC4005',
     bgMid: '#E86730',
     bgTo: '#EFEF2F',
+    threshold: 300,
   },
 } as const;
 
@@ -38,6 +41,8 @@ export const DEVICE_META = {
   'Ventilation Fan': { icon: 'fan', color: '#38a169' },
   'Smart Pump': { icon: 'droplets', color: '#3182ce' },
   'Smart Light': { icon: 'lightbulb', color: '#d69e2e' },
+  'Smart Heater': { icon: 'flame', color: '#e53e3e' },
+  'Misting System': { icon: 'cloud-rain', color: '#805ad5' },
 } as const;
 
 export const EXECUTION_STATUS = ['PROCESSING', 'SUCCESS', 'FAILURE'] as const;

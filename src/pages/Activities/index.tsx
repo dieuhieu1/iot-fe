@@ -3,11 +3,11 @@ import ActivityFilterBar, { type ActivityFilters } from './FilterBar';
 import ActivityTable from './ActivityTable';
 
 const DEFAULT_FILTERS: ActivityFilters = {
-  deviceId:        '',
-  action:          '',
+  deviceId: '',
+  action: '',
   executionStatus: '',
-  date:            '',
-  sortOrder:       'DESC',
+  date: '',
+  sortOrder: 'DESC',
 };
 
 export default function ActivitiesPage() {

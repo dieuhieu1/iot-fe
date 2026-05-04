@@ -98,6 +98,7 @@ export default function HeroBanner() {
             const reading = readings[type];
             const meta = SENSOR_META[type as keyof typeof SENSOR_META];
             const gradientId = `wave-gradient-${type}`;
+            const belowThreshold = reading != null && reading.value < meta.threshold;
             return (
               <div
                 key={type}
@@ -105,6 +106,8 @@ export default function HeroBanner() {
                 style={{
                   background: cardBg,
                   border: `1px solid ${border}`,
+                  filter: belowThreshold ? 'saturate(0.2) brightness(0.75)' : undefined,
+                  transition: 'filter 0.6s ease',
                 }}
               >
                 {/* Left: icon + label + value */}

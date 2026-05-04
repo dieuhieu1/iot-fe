@@ -3,8 +3,8 @@ interface Props {
 }
 
 const config: Record<string, { label: string; className: string }> = {
-  SUCCESS:    { label: '✓ Success', className: 'bg-green-100 text-green-800' },
-  FAILURE:    { label: '✗ Failed',  className: 'bg-red-100 text-red-800'   },
+  SUCCESS: { label: '✓ Success', className: 'bg-green-100 text-green-800' },
+  FAILURE: { label: '✗ Failed', className: 'bg-red-100 text-red-800' },
   PROCESSING: { label: '⟳ Pending', className: 'bg-orange-100 text-orange-800' },
 };
 

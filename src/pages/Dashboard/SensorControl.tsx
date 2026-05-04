@@ -61,6 +61,24 @@ const DEVICE_CONFIG: Record<
     trackOn: 'linear-gradient(90deg, #c97d10 0%, #f5c842 30%, #ffe066 60%)',
     trackOff: 'linear-gradient(90deg, #a0a0a0 0%, #c8c8c8 30%, #b0b0b0 60%)',
   },
+  'Smart Heater': {
+    icon: 'mdi:radiator',
+    aniIcon: 'ph:fire-fill',
+    labelGradient: 'linear-gradient(180deg, #FFA07A 0%, #8B0000 100%)',
+    colorFrom: '#E53E3E',
+    colorTo: '#742A2A',
+    trackOn: 'linear-gradient(90deg, #c53030 0%, #f56565 30%, #ffa07a 60%)',
+    trackOff: 'linear-gradient(90deg, #a0a0a0 0%, #c8c8c8 30%, #b0b0b0 60%)',
+  },
+  'Misting System': {
+    icon: 'mdi:weather-fog',
+    aniIcon: 'ph:cloud-rain-fill',
+    labelGradient: 'linear-gradient(180deg, #D6BCFA 0%, #44337A 100%)',
+    colorFrom: '#805AD5',
+    colorTo: '#322659',
+    trackOn: 'linear-gradient(90deg, #553c9a 0%, #9f7aea 30%, #d6bcfa 60%)',
+    trackOff: 'linear-gradient(90deg, #a0a0a0 0%, #c8c8c8 30%, #b0b0b0 60%)',
+  },
 };
 
 function getDeviceConfig(type: string) {

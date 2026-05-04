@@ -19,6 +19,7 @@ interface Props {
   data: ChartDataPoint[];
   unit: string;
   latestValue?: number;
+  belowThreshold?: boolean;
 }
 
 function formatTime(ts: string) {
@@ -37,6 +38,7 @@ export default function SensorChart({
   data,
   unit,
   latestValue,
+  belowThreshold,
 }: Props) {
   const gradientId = `grad-${title.replace(/\s+/g, '-')}`;
   const chartData = data.map((d) => ({ ...d, time: formatTime(d.recordedAt) }));
@@ -44,7 +46,11 @@ export default function SensorChart({
   return (
     <div
       className="rounded-lg p-2 h-50 w-310"
-      style={{ background: `linear-gradient(to right, ${bgFrom} 0%, ${bgMid} 50%, ${bgTo} 100%)` }}
+      style={{
+        background: `linear-gradient(to right, ${bgFrom} 0%, ${bgMid} 50%, ${bgTo} 100%)`,
+        filter: belowThreshold ? 'saturate(0.2) brightness(0.75)' : undefined,
+        transition: 'filter 0.6s ease',
+      }}
     >
       <div className="flex items-center justify-between">
         <span className="text-sm font-bold text-white">{title}</span>

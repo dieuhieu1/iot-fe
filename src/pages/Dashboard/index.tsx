@@ -23,7 +23,7 @@ export default function DashboardPage() {
             style={{ background: 'linear-gradient(to right, #E31637, #142F63)' }}
           />
 
-          <QuickActions />
+          {/* <QuickActions /> */}
         </div>
       </div>
     </div>

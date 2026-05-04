@@ -3,12 +3,11 @@ import SensorFilterBar, { type SensorFilters } from './FilterBar';
 import SensorTable from './SensorTable';
 
 const DEFAULT_FILTERS: SensorFilters = {
-  sensorId:   '',
   sensorName: '',
-  date:       '',
-  value:      '',
-  sortBy:     'recordedAt',
-  sortOrder:  'DESC',
+  date: '',
+  value: '',
+  sortBy: 'recordedAt',
+  sortOrder: 'DESC',
 };
 
 export default function SensorsPage() {

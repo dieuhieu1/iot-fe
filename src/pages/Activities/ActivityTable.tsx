@@ -11,9 +11,9 @@ import type { ActivityFilters } from './FilterBar';
 const PAGE_SIZE = 10;
 
 const DEVICE_ICON: Record<string, { Icon: typeof Wind; color: string }> = {
-  'Ventilation Fan': { Icon: Wind,      color: '#38a169' },
-  'Smart Pump':      { Icon: Droplets,  color: '#3182ce' },
-  'Smart Light':     { Icon: Lightbulb, color: '#d69e2e' },
+  'Ventilation Fan': { Icon: Wind, color: '#38a169' },
+  'Smart Pump': { Icon: Droplets, color: '#3182ce' },
+  'Smart Light': { Icon: Lightbulb, color: '#d69e2e' },
 };
 
 interface DeviceStatusEvent {
@@ -45,15 +45,15 @@ function CopyBtn({ text }: { text: string }) {
 }
 
 export default function ActivityTable({ filters }: Props) {
-  const [rows, setRows]       = useState<ActionLogRow[]>([]);
-  const [total, setTotal]     = useState(0);
-  const [page, setPage]       = useState(1);
+  const [rows, setRows] = useState<ActionLogRow[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  const { deviceSocket }      = useSockets();
-  const rowsRef               = useRef<ActionLogRow[]>([]);
-  const filtersRef            = useRef(filters);
-  rowsRef.current             = rows;
-  filtersRef.current          = filters;
+  const { deviceSocket } = useSockets();
+  const rowsRef = useRef<ActionLogRow[]>([]);
+  const filtersRef = useRef(filters);
+  rowsRef.current = rows;
+  filtersRef.current = filters;
 
   useEffect(() => {
     setPage(1);
@@ -62,14 +62,14 @@ export default function ActivityTable({ filters }: Props) {
   useEffect(() => {
     setLoading(true);
     const params: Record<string, string | number> = {
-      limit:  PAGE_SIZE,
+      limit: PAGE_SIZE,
       offset: (page - 1) * PAGE_SIZE,
     };
-    if (filters.deviceId)        params.deviceId        = parseInt(filters.deviceId);
-    if (filters.action)          params.action          = filters.action;
+    if (filters.deviceId) params.deviceId = parseInt(filters.deviceId);
+    if (filters.action) params.action = filters.action;
     if (filters.executionStatus) params.executionStatus = filters.executionStatus;
-    if (filters.date)            params.date            = filters.date;
-    if (filters.sortOrder)       params.sortOrder       = filters.sortOrder;
+    if (filters.date) params.date = filters.date;
+    if (filters.sortOrder) params.sortOrder = filters.sortOrder;
     getActionLogs(params)
       .then((res) => {
         setRows(res.data.data);

@@ -18,9 +18,9 @@ interface SensorEvent {
 }
 
 const TYPE_ICON: Record<string, { Icon: typeof Flame; color: string; label: string }> = {
-  Temperature: { Icon: Flame,    color: '#e53e3e', label: 'Temperature'    },
-  Humidity:    { Icon: Droplets, color: '#3182ce', label: 'Humidity'       },
-  Light:       { Icon: Sun,      color: '#d69e2e', label: 'Light Intensity' },
+  Temperature: { Icon: Flame, color: '#e53e3e', label: 'Temperature' },
+  Humidity: { Icon: Droplets, color: '#3182ce', label: 'Humidity' },
+  Light: { Icon: Sun, color: '#d69e2e', label: 'Light Intensity' },
 };
 
 // Blend between two hex colors based on t (0→1)
@@ -35,9 +35,9 @@ function blendHex(a: string, b: string, t: number) {
 }
 
 const VALUE_RANGE: Record<string, { min: number; max: number; colorLow: string; colorHigh: string }> = {
-  Temperature: { min: 0,    max: 50,   colorLow: '#3182ce', colorHigh: '#e53e3e' }, // blue→red
-  Humidity:    { min: 0,    max: 100,  colorLow: '#d69e2e', colorHigh: '#3182ce' }, // orange→blue
-  Light:       { min: 0,    max: 1000, colorLow: '#718096', colorHigh: '#d69e2e' }, // gray→yellow
+  Temperature: { min: 0, max: 50, colorLow: '#3182ce', colorHigh: '#e53e3e' }, // blue→red
+  Humidity: { min: 0, max: 100, colorLow: '#d69e2e', colorHigh: '#3182ce' }, // orange→blue
+  Light: { min: 0, max: 1000, colorLow: '#718096', colorHigh: '#d69e2e' }, // gray→yellow
 };
 
 function valueColor(type: string, value: number): string {
@@ -68,13 +68,13 @@ function CopyBtn({ text }: { text: string }) {
 }
 
 export default function SensorTable({ filters }: Props) {
-  const [rows, setRows]       = useState<SensorDataRow[]>([]);
-  const [total, setTotal]     = useState(0);
-  const [page, setPage]       = useState(1);
+  const [rows, setRows] = useState<SensorDataRow[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  const { sensorSocket }      = useSockets();
-  const filtersRef            = useRef(filters);
-  filtersRef.current          = filters;
+  const { sensorSocket } = useSockets();
+  const filtersRef = useRef(filters);
+  filtersRef.current = filters;
 
   useEffect(() => {
     setPage(1);
@@ -83,15 +83,14 @@ export default function SensorTable({ filters }: Props) {
   useEffect(() => {
     setLoading(true);
     const params: Record<string, string | number> = {
-      limit:  PAGE_SIZE,
+      limit: PAGE_SIZE,
       offset: (page - 1) * PAGE_SIZE,
     };
-    if (filters.sensorId)   params.sensorId   = parseInt(filters.sensorId);
     if (filters.sensorName) params.sensorName = filters.sensorName;
-    if (filters.date)       params.date       = filters.date;
-    if (filters.value)      params.value      = parseFloat(filters.value);
-    if (filters.sortBy)     params.sortBy     = filters.sortBy;
-    if (filters.sortOrder)  params.sortOrder  = filters.sortOrder;
+    if (filters.date) params.date = filters.date;
+    if (filters.value) params.value = parseFloat(filters.value);
+    if (filters.sortBy) params.sortBy = filters.sortBy;
+    if (filters.sortOrder) params.sortOrder = filters.sortOrder;
     getSensorData(params)
       .then((res) => {
         setRows(res.data.data);
@@ -108,7 +107,6 @@ export default function SensorTable({ filters }: Props) {
       if (f.sortBy !== 'recordedAt' || f.sortOrder !== 'DESC') return;
 
       // Skip if incoming event doesn't match active filters
-      if (f.sensorId) return; // can't verify sensorId from socket event
       if (f.sensorName && !event.type.toLowerCase().includes(f.sensorName.toLowerCase())) return;
       if (f.date && !event.recordedAt.includes(f.date)) return;
       if (f.value && parseFloat(f.value) !== event.value) return;

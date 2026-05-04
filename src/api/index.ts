@@ -90,6 +90,17 @@ export const getDashboardDevices = () =>
 export const patchDeviceControl = (id: number, action: 'ON' | 'OFF') =>
   api.patch<{ message: string; logId: number }>(`/devices/${id}/control`, { action });
 
+export interface SensorListItem {
+  id: number;
+  name: string;
+  sensorCode: string;
+  type: string;
+  unit: string | null;
+}
+
+export const getSensors = (params?: Record<string, string | number>) =>
+  api.get<{ data: SensorListItem[]; meta: object }>('/sensors', { params });
+
 export const getSensorData = (params: Record<string, string | number>) =>
   api.get<{ data: SensorDataRow[]; total: number }>('/sensor-data', { params });
 
@@ -97,3 +108,15 @@ export const getActionLogs = (params: Record<string, string | number>) =>
   api.get<{ data: ActionLogRow[]; meta: { page: number; limit: number; total: number; totalPages: number } }>(
     '/action-logs', { params }
   );
+
+export interface DeviceActionStat {
+  deviceId: number;
+  deviceName: string;
+  deviceType: string;
+  onCount: number;
+  offCount: number;
+  totalCount: number;
+}
+
+export const getActionLogStats = () =>
+  api.get<DeviceActionStat[]>('/action-logs/stats');

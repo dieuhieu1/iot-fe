@@ -55,6 +55,7 @@ export default function SensorCharts() {
         const meta = SENSOR_META[type];
         const ds = datasets[type];
         const latestValue = ds?.data.at(-1)?.value;
+        const belowThreshold = latestValue !== undefined && latestValue < meta.threshold;
         return (
           <SensorChart
             key={type}
@@ -67,6 +68,7 @@ export default function SensorCharts() {
             data={ds?.data ?? []}
             unit={meta.unit}
             latestValue={latestValue}
+            belowThreshold={belowThreshold}
           />
         );
       })}
